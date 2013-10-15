@@ -67,8 +67,9 @@
  * If SCAN_RANGE is defined this will happen automatically and 
  * the offset printed into the system log.
  */
-#define SYSENT_OFFSET       0x1C028
-//#define SCAN_RANGE        0x20000
+//#define SYSENT_OFFSET       0x1C028
+#define SYSENT_OFFSET       0x1D508
+#define SCAN_RANGE        0x20000
 
 static struct sysent *_sysent;
 
@@ -143,6 +144,7 @@ kern_return_t pt_deny_attach_start (kmod_info_t *ki, void *d) {
     
     DLOG("[pt_deny_attach] Found _nsysent at %p, with value %d\n", _nsysent, *_nsysent);
 
+    printf("[pt_deny_attach] Testing offset 0x%lx\n", offset);
 	_sysent = locate_sysent(_nsysent, offset);
     
 #ifdef SCAN_RANGE
@@ -152,7 +154,8 @@ kern_return_t pt_deny_attach_start (kmod_info_t *ki, void *d) {
         printf("[pt_deny_attach] Attempting to locate _sysent in memory\n");
         
         for(offset = -SCAN_RANGE; offset < SCAN_RANGE && _sysent == NULL; offset++) {
-            _sysent = locate_sysent(slide, _nsysent, offset);
+            printf("[pt_deny_attach] Testing offset 0x%lx\n", offset);
+            _sysent = locate_sysent(_nsysent, offset);
         }
 	}
 #endif
